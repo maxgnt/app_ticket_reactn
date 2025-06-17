@@ -12,7 +12,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.replace('/'); 
+      router.replace('/tickets'); 
     } catch (error: any) {
       console.log(error);
       Alert.alert('Erreur de connexion', error.message);

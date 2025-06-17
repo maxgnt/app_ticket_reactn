@@ -22,9 +22,9 @@ export default function RootLayout() {
   useEffect(() => {
     if (!checkingAuth) {
       if (user) {
-        router.replace('/');
+        router.replace('/tickets');
       } else {
-        router.replace('/Login');
+        router.replace('/login');
       }
     }
   }, [checkingAuth, user]);
