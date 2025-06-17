@@ -8,7 +8,7 @@ export default function TabLayout() {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.replace('/Login');
+    router.replace('/login');
   };
 
   return (
