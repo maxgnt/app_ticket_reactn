@@ -16,7 +16,7 @@ interface Ticket {
   id: string;
   title: string;
   status: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: 'low' | 'medium' | 'high';
   category: string;
 }
 
@@ -46,11 +46,26 @@ export default function TicketsScreen() {
         return 'Moyenne';
       case 'high':
         return 'Haute';
-      case 'critical':
-        return 'Critique';
       default:
         return priority;
     }
+  };
+
+  const getCardStyle = (priority: Ticket['priority']) => {
+    switch (priority) {
+      case 'low':
+        return { backgroundColor: '#3DC145' }; // vert
+      case 'medium':
+        return { backgroundColor: '#FFAC05' }; // orange
+      case 'high':
+        return { backgroundColor: '#FC2D00' }; // rouge
+      default:
+        return { backgroundColor: '#f2f2f2' };
+    }
+  };
+
+  const getTextColor = (priority: Ticket['priority']) => {
+    return priority === 'high' ? { color: 'white' } : { color: 'black' };
   };
 
   const getStatusLabel = (status: string) => {
@@ -68,29 +83,17 @@ export default function TicketsScreen() {
     }
   };
 
-  const getCardStyle = (priority: Ticket['priority']) => {
-    switch (priority) {
-      case 'low':
-        return { backgroundColor: '#3DC145' }; 
-      case 'medium':
-        return { backgroundColor: '#FFAC05' }; 
-      case 'high':
-        return { backgroundColor: '#FC2D00' };
-    }
-  };
-
   const renderItem = ({ item }: { item: Ticket }) => (
     <TouchableOpacity onPress={() => router.push(`/tickets/${item.id}`)}>
       <View style={[styles.card, getCardStyle(item.priority)]}>
-        <View style={styles.priorityIndicator} />
         <View style={styles.cardContent}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text>Catégorie : {item.category}</Text>
-          <Text>
-            Priorité : <Text style={styles.badge}>{getPriorityLabel(item.priority)}</Text>
+          <Text style={[styles.title, getTextColor(item.priority)]}>{item.title}</Text>
+          <Text style={getTextColor(item.priority)}>Catégorie : {item.category}</Text>
+          <Text style={getTextColor(item.priority)}>
+            Priorité : <Text style={styles.bold}>{getPriorityLabel(item.priority)}</Text>
           </Text>
-          <Text>
-            Statut : <Text style={styles.badge}>{getStatusLabel(item.status)}</Text>
+          <Text style={getTextColor(item.priority)}>
+            Statut : <Text style={styles.bold}>{getStatusLabel(item.status)}</Text>
           </Text>
         </View>
       </View>
@@ -125,12 +128,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, paddingTop: 40 },
   header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   card: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
-    gap: 10,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -140,22 +140,13 @@ const styles = StyleSheet.create({
   cardContent: {
     flex: 1,
   },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
-  priorityIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginTop: 4,
-    backgroundColor: '#999',
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    overflow: 'hidden',
-    marginTop: 4,
-    fontSize: 12,
-    color: 'black',
+  bold: {
+    fontWeight: 'bold',
   },
   addButton: {
     position: 'absolute',

@@ -1,4 +1,6 @@
 import { auth, db } from '@/firebase';
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
 import React, { useState } from 'react';
@@ -11,7 +13,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 
 export default function CreateTicket() {
@@ -19,17 +21,18 @@ export default function CreateTicket() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
-  const [category, setCategory] = useState('hardware');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [category, setCategory] = useState('Matériel');
   const [status, setStatus] = useState('open');
-  const [deadline, setDeadline] = useState('');
+  const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleSubmit = async () => {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('Utilisateur non connecté');
 
-      const deadlineDate = deadline ? Timestamp.fromDate(new Date(deadline)) : null;
+      const deadlineTimestamp = deadlineDate ? Timestamp.fromDate(deadlineDate) : null;
 
       await addDoc(collection(db, 'tickets'), {
         title,
@@ -39,8 +42,8 @@ export default function CreateTicket() {
         status,
         createdBy: user.uid,
         createdAt: serverTimestamp(),
-        deadline: deadlineDate,
         updatedAt: serverTimestamp(),
+        deadline: deadlineTimestamp,
       });
 
       router.replace('/(app)/tickets');
@@ -52,7 +55,7 @@ export default function CreateTicket() {
   const getPriorityColor = (value: string) => {
     switch (value) {
       case 'low':
-        return { backgroundColor: '#3DC145', borderColor: '#3DC145' }; 
+        return { backgroundColor: '#3DC145', borderColor: '#3DC145' };
       case 'medium':
         return { backgroundColor: '#FFAC05', borderColor: '#FFAC05' };
       case 'high':
@@ -66,7 +69,7 @@ export default function CreateTicket() {
     label: string,
     value: string,
     setter: (val: string) => void,
-    options: { label: string, value: string }[],
+    options: { label: string; value: string }[],
     isPriority = false
   ) => (
     <>
@@ -98,7 +101,12 @@ export default function CreateTicket() {
       <Text style={styles.title}>Créer un ticket</Text>
 
       <Text style={styles.label}>Titre</Text>
-      <TextInput value={title} onChangeText={setTitle} style={styles.input} placeholder="Ex : Problème imprimante" />
+      <TextInput
+        value={title}
+        onChangeText={setTitle}
+        style={styles.input}
+        placeholder="Ex : Problème imprimante"
+      />
 
       <Text style={styles.label}>Description</Text>
       <TextInput
@@ -109,35 +117,56 @@ export default function CreateTicket() {
         multiline
       />
 
-      {renderOptions('Priorité', priority, setPriority, [
-        { label: 'Basse', value: 'low' },
-        { label: 'Moyenne', value: 'medium' },
-        { label: 'Haute', value: 'high' },
-       
-      ], true)}
+      {renderOptions(
+        'Priorité',
+        priority,
+        setPriority,
+        [
+          { label: 'Basse', value: 'low' },
+          { label: 'Moyenne', value: 'medium' },
+          { label: 'Haute', value: 'high' },
+        ],
+        true
+      )}
 
       {renderOptions('Catégorie', category, setCategory, [
-        { label: 'Matériel', value: 'hardware' },
-        { label: 'Logiciel', value: 'software' },
-        { label: 'Réseau', value: 'network' },
-        { label: 'Accès', value: 'access' },
-        { label: 'Autre', value: 'other' }
+        { label: 'Matériel', value: 'Matériel' },
+        { label: 'Logiciel', value: 'Logiciel' },
+        { label: 'Réseau', value: 'Réseau' },
+        { label: 'Accès', value: 'Accès' },
+        { label: 'Autre', value: 'Autre' },
       ])}
 
       {renderOptions('Statut', status, setStatus, [
         { label: 'Ouvert', value: 'open' },
         { label: 'En cours', value: 'in_progress' },
-        { label: 'Terminé', value: 'done' }
+        { label: 'Terminé', value: 'done' },
       ])}
 
-      <Text style={styles.label}>Deadline (AAAA-MM-JJ)</Text>
-      <TextInput
-        value={deadline}
-        onChangeText={setDeadline}
-        placeholder="2025-06-25"
-        style={styles.input}
-        keyboardType="numbers-and-punctuation"
-      />
+      <Text style={styles.label}>Deadline</Text>
+      <TouchableOpacity
+        onPress={() => setShowDatePicker(true)}
+        style={[styles.input, styles.deadlineInput]}
+      >
+        <Text style={{ color: deadlineDate ? '#000' : '#888' }}>
+          {deadlineDate ? deadlineDate.toISOString().split('T')[0] : 'Choisir une date'}
+        </Text>
+        <Ionicons name="calendar" size={20} color="#555" />
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={deadlineDate || new Date()}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setDeadlineDate(selectedDate);
+            }
+          }}
+        />
+      )}
 
       <View style={{ marginTop: 20 }}>
         <Button title="Créer le ticket" onPress={handleSubmit} />
@@ -169,6 +198,11 @@ const styles = StyleSheet.create({
     padding: Platform.OS === 'ios' ? 12 : 8,
     backgroundColor: '#fff',
     marginBottom: 8,
+  },
+  deadlineInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttonGroup: {
     flexDirection: 'row',
