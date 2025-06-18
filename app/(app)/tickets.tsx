@@ -1,18 +1,22 @@
 import { db } from '@/firebase';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { collection, onSnapshot } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Ticket {
   id: string;
   title: string;
   status: string;
   priority: 'low' | 'medium' | 'high' | 'critical';
+  category: string;
 }
 
 export default function TicketsScreen() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'tickets'), (snapshot) => {
@@ -27,17 +31,6 @@ export default function TicketsScreen() {
     return () => unsubscribe();
   }, []);
 
-  const renderItem = ({ item }: { item: Ticket }) => (
-    <View style={styles.card}>
-      <View style={[styles.priorityIndicator, getPriorityStyle(item.priority)]} />
-      <View>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.status}>Statut : {item.status}</Text>
-        <Text style={styles.priority}>Priorité : {item.priority}</Text>
-      </View>
-    </View>
-  );
-
   const getPriorityStyle = (priority: Ticket['priority']) => {
     switch (priority) {
       case 'low':
@@ -49,13 +42,27 @@ export default function TicketsScreen() {
       case 'critical':
         return { backgroundColor: 'purple' };
       default:
-        return { backgroundColor: 'grey' };
+        return { backgroundColor: 'gray' };
     }
   };
 
+  const renderItem = ({ item }: { item: Ticket }) => (
+    <TouchableOpacity onPress={() => router.push(`/tickets/${item.id}`)}>
+      <View style={styles.card}>
+        <View style={[styles.priorityIndicator, getPriorityStyle(item.priority)]} />
+        <View style={styles.cardContent}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text>Statut : {item.status}</Text>
+          <Text>Priorité : {item.priority}</Text>
+          <Text>Catégorie : {item.category}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Mes tickets</Text>
+      <Text style={styles.header}>Liste des tickets</Text>
       {loading ? (
         <ActivityIndicator />
       ) : (
@@ -63,9 +70,16 @@ export default function TicketsScreen() {
           data={tickets}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={{ gap: 10 }}
+          contentContainerStyle={{ paddingBottom: 80 }}
         />
       )}
+
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => router.push('/tickets/create')}
+      >
+        <Ionicons name="add" size={28} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -79,15 +93,38 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: '#f2f2f2',
     borderRadius: 8,
+    marginBottom: 10,
     gap: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  title: { fontSize: 18, fontWeight: 'bold' },
-  status: { fontSize: 14 },
-  priority: { fontSize: 14 },
+  cardContent: {
+    flex: 1,
+  },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   priorityIndicator: {
     width: 12,
     height: 12,
     borderRadius: 6,
     marginTop: 4,
+  },
+  addButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#007AFF',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
