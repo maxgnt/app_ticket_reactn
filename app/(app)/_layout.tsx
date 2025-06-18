@@ -1,4 +1,5 @@
 import { auth } from '@/firebase';
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { Button } from 'react-native';
@@ -18,6 +19,21 @@ export default function TabLayout() {
           <Button title="Déconnexion" onPress={handleLogout} />
         ),
       }}
-    />
+    >
+      <Tabs.Screen
+        name="tickets"
+        options={{
+          tabBarLabel: 'Tickets',
+          tabBarIcon: ({ color, size }) => <Ionicons name="list" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tickets/create"
+        options={{
+          tabBarLabel: 'Créer',
+          tabBarIcon: ({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />,
+        }}
+      />
+    </Tabs>
   );
 }
