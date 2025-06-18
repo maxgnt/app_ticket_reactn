@@ -160,7 +160,7 @@ export default function CreateTicket() {
           mode="date"
           display="default"
           onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
+            setShowDatePicker(true);
             if (selectedDate) {
               setDeadlineDate(selectedDate);
             }
