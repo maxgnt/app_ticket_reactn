@@ -3,7 +3,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, onSnapshot } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 interface Ticket {
   id: string;
@@ -34,27 +41,42 @@ export default function TicketsScreen() {
   const getPriorityStyle = (priority: Ticket['priority']) => {
     switch (priority) {
       case 'low':
-        return { backgroundColor: 'green' };
+        
       case 'medium':
-        return { backgroundColor: 'orange' };
+        
       case 'high':
-        return { backgroundColor: 'red' };
+        
       case 'critical':
-        return { backgroundColor: 'purple' };
+        
       default:
-        return { backgroundColor: 'gray' };
+        
+    }
+  };
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'open':
+        
+      case 'in_progress':
+        
+      case 'done':
+        
+      case 'info_required':
+        
+      default:
+        
     }
   };
 
   const renderItem = ({ item }: { item: Ticket }) => (
     <TouchableOpacity onPress={() => router.push(`/tickets/${item.id}`)}>
       <View style={styles.card}>
-        <View style={[styles.priorityIndicator, getPriorityStyle(item.priority)]} />
+        <View style={[styles.priorityIndicator]} />
         <View style={styles.cardContent}>
           <Text style={styles.title}>{item.title}</Text>
-          <Text>Statut : {item.status}</Text>
-          <Text>Priorité : {item.priority}</Text>
           <Text>Catégorie : {item.category}</Text>
+          <Text>Priorité : <Text style={[styles.badge]}>{item.priority}</Text></Text>
+          <Text>Statut : <Text style={[styles.badge]}>{item.status}</Text></Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -76,9 +98,9 @@ export default function TicketsScreen() {
 
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => router.push('/tickets/create')}
+        onPress={() => router.push('/(app)/tickets/create')}
       >
-        <Ionicons name="add" size={28} color="white" />
+        <Ionicons name="add" size={28} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -110,6 +132,16 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginTop: 4,
+  },
+  badge: {
+    
+   
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    overflow: 'hidden',
+    marginTop: 4,
+    fontSize: 12,
   },
   addButton: {
     position: 'absolute',

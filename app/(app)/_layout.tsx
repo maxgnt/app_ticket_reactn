@@ -15,6 +15,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        title: '', 
         headerRight: () => (
           <Button title="Déconnexion" onPress={handleLogout} />
         ),
@@ -23,15 +24,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="tickets"
         options={{
+          title: 'Mes tickets',
           tabBarLabel: 'Tickets',
-          tabBarIcon: ({ color, size }) => <Ionicons name="list" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="tickets/create"
         options={{
+          title: 'Créer un ticket',
           tabBarLabel: 'Créer',
-          tabBarIcon: ({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add-circle" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
