@@ -38,45 +38,60 @@ export default function TicketsScreen() {
     return () => unsubscribe();
   }, []);
 
-  const getPriorityStyle = (priority: Ticket['priority']) => {
+  const getPriorityLabel = (priority: Ticket['priority']) => {
     switch (priority) {
       case 'low':
-        
+        return 'Basse';
       case 'medium':
-        
+        return 'Moyenne';
       case 'high':
-        
+        return 'Haute';
       case 'critical':
-        
+        return 'Critique';
       default:
-        
+        return priority;
     }
   };
 
-  const getStatusStyle = (status: string) => {
+  const getStatusLabel = (status: string) => {
     switch (status) {
       case 'open':
-        
+        return 'Ouvert';
       case 'in_progress':
-        
+        return 'En cours';
       case 'done':
-        
+        return 'Terminé';
       case 'info_required':
-        
+        return 'Demande infos';
       default:
-        
+        return status;
+    }
+  };
+
+  const getCardStyle = (priority: Ticket['priority']) => {
+    switch (priority) {
+      case 'low':
+        return { backgroundColor: '#3DC145' }; 
+      case 'medium':
+        return { backgroundColor: '#FFAC05' }; 
+      case 'high':
+        return { backgroundColor: '#FC2D00' };
     }
   };
 
   const renderItem = ({ item }: { item: Ticket }) => (
     <TouchableOpacity onPress={() => router.push(`/tickets/${item.id}`)}>
-      <View style={styles.card}>
-        <View style={[styles.priorityIndicator]} />
+      <View style={[styles.card, getCardStyle(item.priority)]}>
+        <View style={styles.priorityIndicator} />
         <View style={styles.cardContent}>
           <Text style={styles.title}>{item.title}</Text>
           <Text>Catégorie : {item.category}</Text>
-          <Text>Priorité : <Text style={[styles.badge]}>{item.priority}</Text></Text>
-          <Text>Statut : <Text style={[styles.badge]}>{item.status}</Text></Text>
+          <Text>
+            Priorité : <Text style={styles.badge}>{getPriorityLabel(item.priority)}</Text>
+          </Text>
+          <Text>
+            Statut : <Text style={styles.badge}>{getStatusLabel(item.status)}</Text>
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -113,7 +128,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: 15,
-    backgroundColor: '#f2f2f2',
     borderRadius: 8,
     marginBottom: 10,
     gap: 10,
@@ -132,16 +146,16 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginTop: 4,
+    backgroundColor: '#999',
   },
   badge: {
-    
-   
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
     overflow: 'hidden',
     marginTop: 4,
     fontSize: 12,
+    color: 'black',
   },
   addButton: {
     position: 'absolute',

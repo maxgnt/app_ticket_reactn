@@ -101,10 +101,10 @@ export default function TicketDetail() {
       <Text style={styles.label}>Statut</Text>
       <View style={styles.statusContainer}>
         {[
-          { label: 'Ouvert', value: 'open' },
-          { label: 'En cours', value: 'in_progress' },
-          { label: 'Résolu', value: 'resolved' },
-          { label: 'Demande infos', value: 'info_required' },
+          { label: 'Ouvert', value: 'Ouvert' },
+          { label: 'En cours', value: 'En cours' },
+          { label: 'Résolu', value: 'Résolu' },
+          { label: 'Demande infos', value: 'Demande infos' },
         ].map((s) => (
           <TouchableOpacity
             key={s.value}
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+  //  borderColor: '#ccc',
     padding: 10,
     borderRadius: 6,
     backgroundColor: '#f9f9f9',
