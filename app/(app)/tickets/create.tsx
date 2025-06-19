@@ -6,14 +6,13 @@ import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firesto
 import React, { useState } from 'react';
 import {
   Alert,
-  Button,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 export default function CreateTicket() {
@@ -32,7 +31,19 @@ export default function CreateTicket() {
       const user = auth.currentUser;
       if (!user) throw new Error('Utilisateur non connecté');
 
-      const deadlineTimestamp = deadlineDate ? Timestamp.fromDate(deadlineDate) : null;
+      if (
+        !title.trim() ||
+        !description.trim() ||
+        !priority ||
+        !category ||
+        !status ||
+        !deadlineDate
+      ) {
+        Alert.alert('Champs requis', 'Veuillez remplir tous les champs avant de soumettre.');
+        return;
+      }
+
+      const deadlineTimestamp = Timestamp.fromDate(deadlineDate);
 
       await addDoc(collection(db, 'tickets'), {
         title,
@@ -160,7 +171,7 @@ export default function CreateTicket() {
           mode="date"
           display="default"
           onChange={(event, selectedDate) => {
-            setShowDatePicker(true);
+            setShowDatePicker(false);
             if (selectedDate) {
               setDeadlineDate(selectedDate);
             }
@@ -168,9 +179,9 @@ export default function CreateTicket() {
         />
       )}
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Créer le ticket" onPress={handleSubmit} />
-      </View>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>Créer le ticket</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -229,5 +240,17 @@ const styles = StyleSheet.create({
   selectedText: {
     color: '#000',
     fontWeight: 'bold',
+  },
+  submitButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

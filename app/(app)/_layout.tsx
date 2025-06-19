@@ -2,7 +2,7 @@ import { auth } from '@/firebase';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { Button } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -15,9 +15,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        title: '', 
+        title: '',
         headerRight: () => (
-          <Button title="Déconnexion" onPress={handleLogout} />
+          <TouchableOpacity onPress={handleLogout} style={{ marginRight: 15 }}>
+            <Ionicons name="log-out-outline" size={24} color="#007AFF" />
+          </TouchableOpacity>
         ),
       }}
     >

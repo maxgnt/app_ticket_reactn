@@ -1,8 +1,9 @@
 import { db } from '@/firebase';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { collection, onSnapshot } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -18,19 +19,33 @@ interface Ticket {
   status: string;
   priority: 'low' | 'medium' | 'high';
   category: string;
+  archived?: boolean;
 }
 
 export default function TicketsScreen() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => router.push('archive')} style={{ marginLeft: 16 }}>
+          <Ionicons name="archive-outline" size={24} color="#007AFF" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'tickets'), (snapshot) => {
-      const data: Ticket[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Ticket[];
+      const data: Ticket[] = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((ticket) => !ticket.archived) as Ticket[];
       setTickets(data);
       setLoading(false);
     });
@@ -54,11 +69,11 @@ export default function TicketsScreen() {
   const getCardStyle = (priority: Ticket['priority']) => {
     switch (priority) {
       case 'low':
-        return { backgroundColor: '#3DC145' }; // vert
+        return { backgroundColor: '#3DC145' };
       case 'medium':
-        return { backgroundColor: '#FFAC05' }; // orange
+        return { backgroundColor: '#FFAC05' };
       case 'high':
-        return { backgroundColor: '#FC2D00' }; // rouge
+        return { backgroundColor: '#FC2D00' };
       default:
         return { backgroundColor: '#f2f2f2' };
     }

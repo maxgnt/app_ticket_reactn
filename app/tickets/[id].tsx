@@ -53,6 +53,7 @@ export default function TicketDetail() {
         status: selectedStatus,
         priority: selectedPriority,
         category: selectedCategory,
+        archived: selectedStatus === 'Résolu'
       });
       Alert.alert('Succès', 'Ticket mis à jour');
     } catch (error: any) {
@@ -128,7 +129,7 @@ export default function TicketDetail() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(app)/tickets')}>
-        <Text style={styles.backButtonText}>← Retour aux tickets</Text>
+        <Text style={styles.backButtonText}> Retour aux tickets</Text>
       </TouchableOpacity>
 
       <Text style={styles.label}>Titre</Text>
